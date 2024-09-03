@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 
 import { Link } from "react-router-dom";
 import Message from "../components/Message";
-import { CookiesProvider, useCookies } from 'react-cookie'
 
 function Home() {
 

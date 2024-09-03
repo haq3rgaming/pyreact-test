@@ -31,10 +31,6 @@ yarn-error.log*
 # C extensions
 *.so
 
-#data
-*.json
-*.webm
-
 # Distribution / packaging
 .Python
 build/

@@ -1,5 +1,6 @@
 from flask import Blueprint, Response
 from flask import session, request, current_app
+from flask import jsonify
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import cross_origin
@@ -13,7 +14,7 @@ db: SQLAlchemy = current_app.config["db"]
 @cross_origin
 @auth.route("/login", methods=["POST"])
 def login():
-    if session.get("id"): return Response("Already logged in", status=400)
+    if session.get("id"): return Response("Already logged in", status=409)
 
     username = request.json.get("username")
     password = request.json.get("password")
@@ -59,3 +60,11 @@ def logout():
         return Response("Logged out!", status=200)
     else:
         return Response("Not logged in", status=400)
+
+@cross_origin
+@auth.route("/whoami", methods=["GET"])
+def whoami():
+    if session.get("id", False):
+        return jsonify(session)
+    else:
+        return Response("Not logged in", status=401)

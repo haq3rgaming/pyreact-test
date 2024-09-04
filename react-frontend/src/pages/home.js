@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from "react";
 
+import { useDispatch, useSelector } from "react-redux";
+import {loadData} from "../store /actions/sessionReducer"
+
 import { Link } from "react-router-dom";
 import Message from "../components/Message";
 
 function Home() {
-
+    const dispatch = useDispatch()
+    const data = useSelector((state) => state.session.sessionData);
+    
     const [messages, setMessages] = useState([]);
-    // figure out how to share cookies between react and flask
+
     useEffect(() => {
         fetch("/chat/posts", {
             method: "GET",
@@ -24,15 +29,22 @@ function Home() {
             });
     }, []);
 
-    const isLoggedIn = localStorage.getItem("session") !== null;
+    useEffect(() => {
+        dispatch(loadData())
+    }, []);
 
     return (
         <div className="Container">
             <div className="Header">
-                {isLoggedIn ? (
-                    <Link to="/logout" className="HeaderLink">
-                        Logout
-                    </Link>
+                {data.id !== undefined ? (
+                    <>
+                        <div>
+                            <p>{data.displayName}</p>
+                        </div>
+                        <Link to="/logout" className="HeaderLink">
+                            Logout
+                        </Link>
+                    </>
                 ) : (
                     <>
                         <Link to="/login" className="HeaderLink">
@@ -47,11 +59,9 @@ function Home() {
             <hr />
             <div className="VerticalLine" />
             <div className="Messages">
-                <Message props={{ type: "recv", content: "hello", sender: "ja" }} />
-                <Message props={{ type: "send", content: "hi", sender: "me" }} />
                 {messages.length > 0 ? (
                     messages.map((message, index) => (
-                        <div key={index}>{message.content}</div>
+                        <Message key={index} props={{ content: message.content, sender: message.authorId }} />
                     ))
                 ) : (
                     <p>Not logged in</p>
